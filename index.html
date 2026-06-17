@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>にゃんこ宝箱ガチャ</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1f2a44, #090b12 70%);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+.app {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 18px;
+  text-align: center;
+  position: relative;
+}
+
+h1 {
+  margin: 8px 0 12px;
+  font-size: 26px;
+  color: #ffd66b;
+  text-shadow: 0 0 12px rgba(255,214,107,.6);
+}
+
+.status {
+  font-size: 14px;
+  color: #cfd8ff;
+  margin-bottom: 12px;
+}
+
+.stage {
+  position: relative;
+  height: 360px;
+  border-radius: 22px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  overflow: hidden;
+  box-shadow: inset 0 0 25px rgba(0,0,0,.35);
+}
+
+.cat {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  font-size: 42px;
+  z-index: 5;
+  transition: transform .25s;
+}
+
+.cat.jump {
+  animation: catJump .55s ease;
+}
+
+@keyframes catJump {
+  0% { transform: translateX(-50%) translateY(0); }
+  45% { transform: translateX(-50%) translateY(-35px); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+
+.cat-message {
+  position: absolute;
+  left: 50%;
+  bottom: 78px;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  font-weight: bold;
+  opacity: 0;
+  z-index: 8;
+}
+
+.cat-message.show {
+  animation: popText .9s ease forwards;
+}
+
+@keyframes popText {
+  0% { opacity: 0; transform: translateX(-50%) scale(.7); }
+  20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.chest {
+  position: absolute;
+  left: 50%;
+  top: -160px;
+  transform: translateX(-50%);
+  font-size: 90px;
+  z-index: 4;
+  filter: drop-shadow(0 0 18px rgba(255,200,80,.65));
+}
+
+.chest.drop {
+  animation: chestDrop .75s cubic-bezier(.2,1.25,.35,1) forwards;
+}
+
+@keyframes chestDrop {
+  0% { top: -160px; transform: translateX(-50%) scale(.95); }
+  72% { top: 110px; transform: translateX(-50%) scale(1.05); }
+  86% { top: 88px; transform: translateX(-50%) scale(.98); }
+  100% { top: 100px; transform: translateX(-50%) scale(1); }
+}
+
+.chest.shake {
+  animation: shake .12s infinite;
+}
+
+@keyframes shake {
+  0% { transform: translateX(-50%) rotate(-5deg); }
+  50% { transform: translateX(-50%) rotate(5deg); }
+  100% { transform: translateX(-50%) rotate(-5deg); }
+}
+
+.chest.float {
+  animation: floatChest 1s ease forwards;
+}
+
+@keyframes floatChest {
+  0% { top: 100px; transform: translateX(-50%) scale(1); }
+  100% { top: 62px; transform: translateX(-50%) scale(1.15); }
+}
+
+.chest.open {
+  animation: openChest .45s ease forwards;
+}
+
+@keyframes openChest {
+  0% { transform: translateX(-50%) scale(1); }
+  60% { transform: translateX(-50%) scale(1.25); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+.result {
+  position: absolute;
+  left: 50%;
+  top: 190px;
+  transform: translateX(-50%) scale(.5);
+  opacity: 0;
+  font-size: 48px;
+  font-weight: 900;
+  z-index: 9;
+  text-shadow: 0 0 18px rgba(255,255,255,.8);
+}
+
+.result.show {
+  animation: resultPop .7s ease forwards;
+}
+
+@keyframes resultPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(.4); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1.25); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.n { color: #ddd; }
+.r { color: #63a8ff; }
+.sr { color: #ffd45c; }
+.ssr {
+  background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, violet);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.rainbow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: conic-gradient(red, orange, yellow, lime, cyan, blue, violet, red);
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+
+.rainbow.show {
+  animation: rainbowFlash 1.4s ease forwards;
+}
+
+@keyframes rainbowFlash {
+  0% { opacity: 0; transform: scale(.8) rotate(0deg); }
+  35% { opacity: .8; }
+  100% { opacity: 0; transform: scale(1.5) rotate(240deg); }
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 22px;
+  animation: sparkleMove 1.2s ease forwards;
+  z-index: 7;
+}
+
+@keyframes sparkleMove {
+  0% { opacity: 0; transform: scale(.3) translateY(0); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.4) translateY(-80px); }
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  top: -20px;
+  animation: fall 1.6s linear forwards;
+  z-index: 10;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(430px) rotate(360deg); opacity: 0; }
+}
+
+button {
+  margin-top: 18px;
+  width: 100%;
+  height: 60px;
+  border: none;
+  border-radius: 18px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #201000;
+  background: linear-gradient(180deg, #ffe18a, #ff9f2e);
+  box-shadow: 0 6px 0 #8b4b00, 0 0 20px rgba(255,180,60,.45);
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #8b4b00;
+}
+
+button:disabled {
+  opacity: .5;
+}
+
+.log {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #cfd8ff;
+}
+
+.badge {
+  display: inline-block;
+  margin: 4px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <h1>🐾 にゃんこ宝箱ガチャ</h1>
+
+  <div class="status">
+    <span class="badge">N 55%</span>
+    <span class="badge">R 30%</span>
+    <span class="badge">SR 12%</span>
+    <span class="badge">SSR 3%</span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="rainbow" id="rainbow"></div>
+    <div class="chest" id="chest">🎁</div>
+    <div class="result" id="result"></div>
+    <div class="cat-message" id="catMessage">にゃ？</div>
+    <div class="cat" id="cat">🐱</div>
+  </div>
+
+  <button id="gachaBtn" onclick="startGacha()">ガチャを引く</button>
+
+  <div class="log">
+    総ガチャ回数：<span id="count">0</span>　
+    SSR回数：<span id="ssrCount">0</span>
+  </div>
+</div>
+
+<script>
+let count = Number(localStorage.getItem("gachaCount") || 0);
+let ssrCount = Number(localStorage.getItem("ssrCount") || 0);
+
+const chest = document.getElementById("chest");
+const result = document.getElementById("result");
+const btn = document.getElementById("gachaBtn");
+const cat = document.getElementById("cat");
+const catMessage = document.getElementById("catMessage");
+const rainbow = document.getElementById("rainbow");
+const stage = document.getElementById("stage");
+const countEl = document.getElementById("count");
+const ssrCountEl = document.getElementById("ssrCount");
+
+updateCounter();
+
+function updateCounter() {
+  countEl.textContent = count;
+  ssrCountEl.textContent = ssrCount;
+  localStorage.setItem("gachaCount", count);
+  localStorage.setItem("ssrCount", ssrCount);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function drawRarity() {
+  const r = Math.random() * 100;
+
+  if (r < 3) {
+    return { name: "SSR", className: "ssr", text: "SSR!!", item: "🌈 神アプリの種" };
+  }
+
+  if (r < 15) {
+    return { name: "SR", className: "sr", text: "SR!", item: "✨ レア素材" };
+  }
+
+  if (r < 45) {
+    return { name: "R", className: "r", text: "R", item: "💎 青い結晶" };
+  }
+
+  return { name: "N", className: "n", text: "N", item: "🪨 ふつうの石" };
+}
+
+async function startGacha() {
+  btn.disabled = true;
+  result.textContent = "";
+  result.className = "result";
+  catMessage.className = "cat-message";
+  rainbow.className = "rainbow";
+
+  chest.className = "chest";
+  chest.textContent = "🎁";
+  chest.style.top = "-160px";
+
+  const rarity = drawRarity();
+
+  count++;
+  updateCounter();
+
+  await sleep(80);
+
+  chest.classList.add("drop");
+  await sleep(850);
+
+  chest.classList.add("shake");
+  await sleep(900);
+
+  chest.classList.remove("shake");
+
+  await sleep(350);
+
+  if (rarity.name === "SSR") {
+    catMessage.textContent = "にゃ？";
+    catMessage.classList.add("show");
+
+    await sleep(700);
+
+    chest.classList.add("float");
+
+    await sleep(500);
+
+    rainbow.classList.add("show");
+    makeSparkles();
+    makeConfetti();
+
+    await sleep(800);
+
+    chest.textContent = "🌈";
+    chest.classList.add("open");
+
+    result.textContent = "SSR!!";
+    result.className = "result show ssr";
+
+    cat.textContent = "😻";
+    cat.classList.add("jump");
+
+    ssrCount++;
+    updateCounter();
+
+    await sleep(1200);
+
+  } else {
+    chest.textContent = "📦";
+    chest.classList.add("open");
+
+    await sleep(300);
+
+    result.textContent = rarity.text;
+    result.className = "result show " + rarity.className;
+
+    cat.textContent = rarity.name === "SR" ? "😺" : "🐱";
+
+    await sleep(1200);
+  }
+
+  await sleep(500);
+
+  result.textContent = rarity.item;
+  result.className = "result show " + rarity.className;
+  result.style.fontSize = "28px";
+
+  await sleep(1200);
+
+  result.style.fontSize = "48px";
+  cat.classList.remove("jump");
+  cat.textContent = "🐱";
+  btn.disabled = false;
+}
+
+function makeSparkles() {
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.textContent = ["✨", "⭐", "💫", "🌟"][Math.floor(Math.random() * 4)];
+    s.style.left = Math.random() * 90 + 5 + "%";
+    s.style.top = Math.random() * 65 + 10 + "%";
+    stage.appendChild(s);
+
+    setTimeout(() => s.remove(), 1300);
+  }
+}
+
+function makeConfetti() {
+  const colors = ["#ff4d4d", "#ffd84d", "#4dff88", "#4dd7ff", "#b84dff", "#ff7ad9"];
+
+  for (let i = 0; i < 45; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "%";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * .35 + "s";
+    stage.appendChild(c);
+
+    setTimeout(() => c.remove(), 1900);
+  }
+}
+
+document.addEventListener("touchend", function(event) {
+  event.preventDefault();
+}, { passive: false });
+</script>
+</body>
+</html>
