@@ -1,761 +1,993 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>にゃんこ宝箱ガチャ Ver2</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>にゃんこ宝箱ガチャ Ver3</title>
+
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;touch-action:manipulation;overscroll-behavior:none}
-body{
-  background:radial-gradient(circle at top,#223056,#080a12 70%);
-  color:#fff;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  overflow:hidden;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
-.app{
-  max-width:430px;
-  min-height:100vh;
-  margin:0 auto;
-  padding:14px;
-  text-align:center;
-  position:relative;
+
+html, body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #080a12;
+  color: #fff;
 }
-h1{
-  margin:6px 0 8px;
-  font-size:25px;
-  color:#ffd86b;
-  text-shadow:0 0 14px rgba(255,210,80,.65);
-}
-.status{
-  display:flex;
-  justify-content:center;
-  gap:6px;
-  flex-wrap:wrap;
-  font-size:12px;
-  margin-bottom:8px;
-  color:#dbe6ff;
-}
-.badge{
-  padding:5px 9px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-}
-.stage{
-  position:relative;
-  height:390px;
-  border-radius:22px;
-  overflow:hidden;
+
+body {
   background:
-    radial-gradient(circle at 50% 25%,rgba(70,120,255,.2),transparent 35%),
-    linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.13);
-  box-shadow:inset 0 0 28px rgba(0,0,0,.45);
-}
-.floor{
-  position:absolute;
-  left:8%;
-  right:8%;
-  bottom:66px;
-  height:16px;
-  border-radius:50%;
-  background:rgba(0,0,0,.35);
-  filter:blur(2px);
+    radial-gradient(circle at 50% 0%, rgba(60, 90, 180, 0.35), transparent 38%),
+    radial-gradient(circle at 50% 60%, rgba(255, 180, 70, 0.12), transparent 40%),
+    linear-gradient(180deg, #151a2c 0%, #070911 100%);
 }
 
-/* ===== CSS CAT ===== */
-.cat{
-  position:absolute;
-  left:50%;
-  bottom:22px;
-  width:88px;
-  height:78px;
-  transform:translateX(-50%);
-  z-index:8;
-}
-.cat.jump{animation:catJump .65s ease}
-@keyframes catJump{
-  0%{transform:translateX(-50%) translateY(0)}
-  45%{transform:translateX(-50%) translateY(-35px)}
-  100%{transform:translateX(-50%) translateY(0)}
-}
-.cat-head{
-  position:absolute;
-  left:14px;
-  top:12px;
-  width:60px;
-  height:56px;
-  background:#f6ead6;
-  border:3px solid #2a1b12;
-  border-radius:50%;
-  box-shadow:0 4px 0 rgba(0,0,0,.18);
-}
-.cat-head:before,.cat-head:after{
-  content:"";
-  position:absolute;
-  top:-14px;
-  width:22px;
-  height:22px;
-  background:#f6ead6;
-  border:3px solid #2a1b12;
-  clip-path:polygon(50% 0,0 100%,100% 100%);
-}
-.cat-head:before{left:4px}
-.cat-head:after{right:4px}
-.cat-patch{
-  position:absolute;
-  right:4px;
-  top:2px;
-  width:25px;
-  height:24px;
-  background:#3a2a22;
-  border-radius:50% 45% 55% 40%;
-}
-.cat-patch2{
-  position:absolute;
-  left:4px;
-  top:8px;
-  width:18px;
-  height:18px;
-  background:#c98242;
-  border-radius:50%;
-}
-.eye{
-  position:absolute;
-  top:26px;
-  width:8px;
-  height:10px;
-  background:#111;
-  border-radius:50%;
-  z-index:2;
-}
-.eye.left{left:18px}
-.eye.right{right:18px}
-.cat.surprise .eye{
-  width:10px;
-  height:12px;
-  top:24px;
-}
-.cat.happy .eye{
-  width:12px;
-  height:5px;
-  top:28px;
-  border-radius:50%;
-}
-.nose{
-  position:absolute;
-  left:50%;
-  top:37px;
-  transform:translateX(-50%);
-  width:7px;
-  height:5px;
-  background:#d47f8a;
-  border-radius:50%;
-  z-index:2;
-}
-.mouth{
-  position:absolute;
-  left:50%;
-  top:44px;
-  transform:translateX(-50%);
-  width:18px;
-  height:9px;
-  border-bottom:3px solid #111;
-  border-radius:0 0 20px 20px;
-  z-index:2;
-}
-.cat.surprise .mouth{
-  width:12px;
-  height:12px;
-  border:3px solid #111;
-  border-radius:50%;
-}
-.cat.happy .mouth{
-  width:24px;
-  height:12px;
-  border-bottom:4px solid #111;
-}
-.cat-message{
-  position:absolute;
-  left:50%;
-  bottom:96px;
-  transform:translateX(-50%) scale(.7);
-  padding:8px 16px;
-  border-radius:999px;
-  background:rgba(0,0,0,.72);
-  border:1px solid rgba(255,255,255,.22);
-  font-weight:900;
-  opacity:0;
-  z-index:12;
-}
-.cat-message.show{animation:msgPop .95s ease forwards}
-@keyframes msgPop{
-  0%{opacity:0;transform:translateX(-50%) scale(.65)}
-  25%{opacity:1;transform:translateX(-50%) scale(1.12)}
-  100%{opacity:1;transform:translateX(-50%) scale(1)}
+.app {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
 }
 
-/* ===== BOX COMMON ===== */
-.box{
-  position:absolute;
-  left:50%;
-  top:-170px;
-  width:140px;
-  height:105px;
-  transform:translateX(-50%);
-  z-index:6;
-  filter:drop-shadow(0 12px 10px rgba(0,0,0,.35));
-}
-.box.drop{animation:boxDrop .8s cubic-bezier(.2,1.25,.35,1) forwards}
-@keyframes boxDrop{
-  0%{top:-170px;transform:translateX(-50%) scale(.92)}
-  72%{top:122px;transform:translateX(-50%) scale(1.05)}
-  87%{top:98px;transform:translateX(-50%) scale(.98)}
-  100%{top:112px;transform:translateX(-50%) scale(1)}
-}
-.box.shake{animation:shake .11s infinite}
-@keyframes shake{
-  0%{transform:translateX(-50%) rotate(-4deg)}
-  50%{transform:translateX(-50%) rotate(4deg)}
-  100%{transform:translateX(-50%) rotate(-4deg)}
-}
-.box.float{animation:boxFloat .8s ease forwards}
-@keyframes boxFloat{
-  0%{top:112px;transform:translateX(-50%) scale(1)}
-  100%{top:72px;transform:translateX(-50%) scale(1.12)}
-}
-.box.open{animation:boxOpen .45s ease forwards}
-@keyframes boxOpen{
-  0%{transform:translateX(-50%) scale(1)}
-  55%{transform:translateX(-50%) scale(1.18)}
-  100%{transform:translateX(-50%) scale(1)}
+.header {
+  text-align: center;
+  padding-top: 4px;
 }
 
-/* cardboard */
-.cardboard{
-  background:linear-gradient(180deg,#b9834a,#8b5b2c);
-  border:4px solid #5a351b;
-  border-radius:10px;
-}
-.cardboard:before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:18px;
-  height:18px;
-  background:rgba(255,235,160,.55);
-}
-.cardboard:after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  width:18px;
-  height:100%;
-  transform:translateX(-50%);
-  background:rgba(255,235,160,.42);
-}
-.cardboard.plain .label{display:none}
-.cardboard.delivery .label{
-  position:absolute;
-  right:10px;
-  bottom:12px;
-  width:48px;
-  height:28px;
-  background:#f5ecd8;
-  border:2px solid #5a351b;
-  border-radius:3px;
-}
-.cardboard.delivery .label:before{
-  content:"にゃんこ村";
-  position:absolute;
-  left:3px;
-  top:4px;
-  color:#5a351b;
-  font-size:7px;
-  font-weight:900;
-}
-.cardboard.shop:before{
-  background:#6fc6ff;
-}
-.cardboard.shop .smile{
-  position:absolute;
-  left:32px;
-  bottom:18px;
-  width:72px;
-  height:32px;
-  border-bottom:6px solid #1b75bb;
-  border-radius:0 0 80px 80px;
+.title {
+  font-size: 25px;
+  font-weight: 900;
+  color: #ffd86b;
+  text-shadow: 0 0 12px rgba(255, 216, 107, .6);
+  line-height: 1.15;
 }
 
-/* treasure */
-.treasure{
-  border-radius:18px 18px 10px 10px;
-  border:4px solid #2b1b10;
-  overflow:hidden;
-}
-.treasure:before{
-  content:"";
-  position:absolute;
-  left:-4px;
-  right:-4px;
-  top:-4px;
-  height:42px;
-  border-radius:18px 18px 4px 4px;
-  border:4px solid #2b1b10;
-}
-.treasure:after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:38px;
-  width:28px;
-  height:28px;
-  transform:translateX(-50%);
-  border-radius:50%;
-  background:#ffe27a;
-  border:3px solid #2b1b10;
-}
-.treasure.wood{
-  background:linear-gradient(180deg,#8b552c,#5a341c);
-}
-.treasure.wood:before{
-  background:linear-gradient(180deg,#a66a37,#6b3e20);
-}
-.treasure.wood .band,
-.treasure.luxury .band{
-  position:absolute;
-  top:0;
-  bottom:0;
-  width:16px;
-  background:#3c4659;
-}
-.treasure .band.left{left:18px}
-.treasure .band.right{right:18px}
-.treasure.luxury{
-  background:linear-gradient(180deg,#b40028,#6b0018);
-  box-shadow:0 0 25px rgba(255,207,70,.45);
-}
-.treasure.luxury:before{
-  background:linear-gradient(180deg,#ffda6a,#c9951e);
-}
-.treasure.luxury .band{
-  background:linear-gradient(180deg,#ffe27a,#b9851a);
-}
-.treasure.rainbowize{
-  box-shadow:0 0 30px #fff,0 0 65px #41d9ff,0 0 95px #ff4df3;
-}
-.treasure.rainbowize:before{
-  background:linear-gradient(90deg,red,orange,yellow,lime,cyan,blue,violet);
+.subtitle {
+  margin-top: 3px;
+  font-size: 12px;
+  color: #cdd8ff;
 }
 
-/* effects */
-.rainbow{
-  position:absolute;
-  inset:-40px;
-  opacity:0;
-  z-index:2;
-  background:conic-gradient(red,orange,yellow,lime,cyan,blue,violet,red);
-  mix-blend-mode:screen;
-}
-.rainbow.show{animation:rainbowFlash 1.35s ease forwards}
-@keyframes rainbowFlash{
-  0%{opacity:0;transform:scale(.75) rotate(0)}
-  30%{opacity:.85}
-  100%{opacity:0;transform:scale(1.5) rotate(260deg)}
-}
-.sparkle{
-  position:absolute;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#fff;
-  z-index:10;
-  animation:sparkle 1.1s ease forwards;
-}
-@keyframes sparkle{
-  0%{opacity:0;transform:scale(.3) translateY(0)}
-  30%{opacity:1}
-  100%{opacity:0;transform:scale(1.8) translateY(-80px)}
-}
-.confetti{
-  position:absolute;
-  top:-20px;
-  width:8px;
-  height:14px;
-  z-index:14;
-  animation:fall 1.55s linear forwards;
-}
-@keyframes fall{
-  0%{opacity:1;transform:translateY(0) rotate(0)}
-  100%{opacity:0;transform:translateY(430px) rotate(420deg)}
+.rates {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 11px;
 }
 
-/* result */
-.result{
-  position:absolute;
-  left:50%;
-  top:225px;
-  width:88%;
-  transform:translateX(-50%) scale(.7);
-  opacity:0;
-  z-index:15;
-  padding:12px 10px;
-  border-radius:18px;
-  background:rgba(0,0,0,.72);
-  border:1px solid rgba(255,255,255,.18);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.result.show{animation:resultPop .55s ease forwards}
-@keyframes resultPop{
-  0%{opacity:0;transform:translateX(-50%) scale(.55)}
-  60%{opacity:1;transform:translateX(-50%) scale(1.08)}
-  100%{opacity:1;transform:translateX(-50%) scale(1)}
-}
-.rarity{
-  font-size:40px;
-  font-weight:1000;
-  line-height:1;
-}
-.item{
-  margin-top:7px;
-  font-size:17px;
-  font-weight:800;
-}
-.n .rarity{color:#d8d8d8}
-.r .rarity{color:#66adff}
-.sr .rarity{color:#ffd95d}
-.ssr .rarity{
-  background:linear-gradient(90deg,red,orange,yellow,lime,cyan,blue,violet);
-  -webkit-background-clip:text;
-  color:transparent;
+.rate {
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  font-weight: 800;
 }
 
-/* controls */
-button{
-  width:100%;
-  height:60px;
-  margin-top:16px;
-  border:none;
-  border-radius:18px;
-  color:#231300;
-  font-size:22px;
-  font-weight:1000;
-  background:linear-gradient(180deg,#ffe999,#ff9d2b);
-  box-shadow:0 6px 0 #7a4100,0 0 24px rgba(255,170,60,.45);
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 430px;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 224, 120, .15), transparent 34%),
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: inset 0 0 30px rgba(0,0,0,.45), 0 8px 28px rgba(0,0,0,.35);
 }
-button:active{transform:translateY(3px);box-shadow:0 3px 0 #7a4100}
-button:disabled{opacity:.55}
-.panel{
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  font-size:13px;
-  color:#dbe6ff;
+
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: .4;
 }
-.mini{
-  flex:1;
-  padding:8px;
-  border-radius:12px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.12);
+
+.secret-zone {
+  position: absolute;
+  left: 50%;
+  bottom: 34px;
+  width: 44px;
+  height: 34px;
+  transform: translateX(-50%);
+  z-index: 40;
 }
-.history{
-  margin-top:8px;
-  height:30px;
-  display:flex;
-  justify-content:center;
-  gap:5px;
+
+.counter-panel {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.history span{
-  min-width:34px;
-  padding:5px 7px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  font-size:12px;
-  font-weight:900;
+
+.counter-card {
+  min-width: 98px;
+  padding: 8px 10px;
+  border-radius: 13px;
+  background: rgba(0,0,0,.46);
+  border: 1px solid rgba(255,215,100,.35);
+  text-align: left;
 }
-.dev{
-  position:absolute;
-  right:10px;
-  top:10px;
-  z-index:20;
-  width:auto;
-  height:32px;
-  padding:0 9px;
-  margin:0;
-  border-radius:999px;
-  font-size:12px;
-  box-shadow:none;
-  background:rgba(255,255,255,.13);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.18);
+
+.counter-card .label {
+  font-size: 11px;
+  color: #ffd86b;
+  font-weight: 900;
 }
-.dev.on{background:linear-gradient(90deg,#ff4de1,#4dd8ff);color:#fff}
+
+.counter-card .num {
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 1000;
+}
+
+.rarity-panel {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 20;
+  padding: 9px 11px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.46);
+  border: 1px solid rgba(255,215,100,.35);
+  font-weight: 1000;
+  font-size: 15px;
+  text-align: left;
+}
+
+.rarity-panel div {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 74px;
+}
+
+.n { color: #d8d8d8; }
+.r { color: #64a8ff; }
+.sr { color: #dfe8ff; }
+.ssr { color: #ffd45d; }
+.ur {
+  background: linear-gradient(90deg, #ff4df0, #ffd84d, #60ff8a, #4dd9ff, #b86bff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.box-wrap {
+  position: absolute;
+  left: 50%;
+  top: -240px;
+  width: 250px;
+  height: 250px;
+  transform: translateX(-50%);
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 14px rgba(0,0,0,.45));
+  user-select: none;
+  pointer-events: none;
+}
+
+.box-wrap.drop {
+  animation: boxDrop .8s cubic-bezier(.22, 1.32, .34, 1) forwards;
+}
+
+@keyframes boxDrop {
+  0% { top: -250px; transform: translateX(-50%) scale(.92); }
+  72% { top: 125px; transform: translateX(-50%) scale(1.06); }
+  86% { top: 102px; transform: translateX(-50%) scale(.98); }
+  100% { top: 116px; transform: translateX(-50%) scale(1); }
+}
+
+.box-wrap.shake {
+  animation: shake .11s infinite;
+}
+
+@keyframes shake {
+  0% { transform: translateX(-50%) rotate(-4deg); }
+  50% { transform: translateX(-50%) rotate(4deg); }
+  100% { transform: translateX(-50%) rotate(-4deg); }
+}
+
+.box-wrap.float {
+  animation: boxFloat .75s ease forwards;
+}
+
+@keyframes boxFloat {
+  0% { top: 116px; transform: translateX(-50%) scale(1); }
+  100% { top: 76px; transform: translateX(-50%) scale(1.14); }
+}
+
+.box-wrap.open {
+  animation: boxOpen .45s ease forwards;
+}
+
+@keyframes boxOpen {
+  0% { transform: translateX(-50%) scale(1); }
+  55% { transform: translateX(-50%) scale(1.16); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+.impact {
+  position: absolute;
+  left: 50%;
+  top: 348px;
+  width: 190px;
+  height: 26px;
+  transform: translateX(-50%) scale(.6);
+  border-radius: 50%;
+  background: rgba(0,0,0,.4);
+  filter: blur(4px);
+  opacity: 0;
+  z-index: 8;
+}
+
+.impact.show {
+  animation: impact .42s ease forwards;
+}
+
+@keyframes impact {
+  0% { opacity: 0; transform: translateX(-50%) scale(.4); }
+  40% { opacity: .75; transform: translateX(-50%) scale(1.15); }
+  100% { opacity: .35; transform: translateX(-50%) scale(1); }
+}
+
+.cat {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  width: 118px;
+  height: 118px;
+  transform: translateX(-50%);
+  z-index: 18;
+}
+
+.cat img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 8px rgba(0,0,0,.4));
+  user-select: none;
+  pointer-events: none;
+}
+
+.cat.jump {
+  animation: catJump .65s ease;
+}
+
+@keyframes catJump {
+  0% { transform: translateX(-50%) translateY(0); }
+  45% { transform: translateX(-50%) translateY(-35px); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+
+.cat-message {
+  position: absolute;
+  left: 50%;
+  bottom: 132px;
+  transform: translateX(-50%) scale(.75);
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,255,255,.22);
+  font-weight: 1000;
+  opacity: 0;
+  z-index: 24;
+}
+
+.cat-message.show {
+  animation: msgPop .8s ease forwards;
+}
+
+@keyframes msgPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(.6); }
+  35% { opacity: 1; transform: translateX(-50%) scale(1.13); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.result-card {
+  position: absolute;
+  left: 50%;
+  top: 270px;
+  width: 86%;
+  transform: translateX(-50%) scale(.65);
+  padding: 12px 10px;
+  border-radius: 18px;
+  background: rgba(0,0,0,.78);
+  border: 1px solid rgba(255,255,255,.18);
+  opacity: 0;
+  z-index: 30;
+  text-align: center;
+  overflow: hidden;
+}
+
+.result-card.show {
+  animation: resultPop .55s ease forwards;
+}
+
+@keyframes resultPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(.55); }
+  60% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.result-rarity {
+  font-size: 44px;
+  font-weight: 1000;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.result-item {
+  margin-top: 7px;
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.awakening-text {
+  position: absolute;
+  left: 50%;
+  top: 182px;
+  transform: translateX(-50%) scale(.6);
+  width: 92%;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 1000;
+  opacity: 0;
+  z-index: 42;
+  color: #fff;
+  text-shadow:
+    0 0 10px #fff,
+    0 0 18px #ff4df0,
+    0 0 24px #4dd9ff;
+}
+
+.awakening-text.show {
+  animation: awakeningText 1.3s ease forwards;
+}
+
+@keyframes awakeningText {
+  0% { opacity: 0; transform: translateX(-50%) scale(.45); }
+  35% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+  70% { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) scale(1.18); }
+}
+
+.rainbow-screen {
+  position: absolute;
+  inset: -30px;
+  opacity: 0;
+  z-index: 3;
+  background: conic-gradient(red, orange, yellow, lime, cyan, blue, violet, red);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.rainbow-screen.show {
+  animation: rainbowFlash 1.35s ease forwards;
+}
+
+@keyframes rainbowFlash {
+  0% { opacity: 0; transform: scale(.7) rotate(0); }
+  30% { opacity: .85; }
+  100% { opacity: 0; transform: scale(1.5) rotate(260deg); }
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  z-index: 38;
+  pointer-events: none;
+}
+
+.flash.show {
+  animation: flash .55s ease forwards;
+}
+
+@keyframes flash {
+  0% { opacity: 0; }
+  35% { opacity: .9; }
+  100% { opacity: 0; }
+}
+
+.all-boxes {
+  position: absolute;
+  left: 50%;
+  top: 104px;
+  width: 96%;
+  transform: translateX(-50%);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  z-index: 36;
+}
+
+.all-boxes.show {
+  display: flex;
+  animation: allBoxesPop .9s ease forwards;
+}
+
+.all-boxes img {
+  width: 19%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 6px rgba(0,0,0,.45));
+}
+
+@keyframes allBoxesPop {
+  0% { opacity: 0; transform: translateX(-50%) scale(.6); }
+  35% { opacity: 1; transform: translateX(-50%) scale(1.06); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  z-index: 34;
+  box-shadow: 0 0 12px #fff;
+  animation: sparkleMove 1.15s ease forwards;
+}
+
+@keyframes sparkleMove {
+  0% { opacity: 0; transform: scale(.2) translateY(0); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.7) translateY(-86px); }
+}
+
+.confetti {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  z-index: 45;
+  animation: fall 1.6s linear forwards;
+}
+
+@keyframes fall {
+  0% { opacity: 1; transform: translateY(0) rotate(0); }
+  100% { opacity: 0; transform: translateY(520px) rotate(420deg); }
+}
+
+.notice {
+  position: absolute;
+  left: 50%;
+  bottom: 150px;
+  transform: translateX(-50%);
+  width: 86%;
+  padding: 10px;
+  border-radius: 15px;
+  background: rgba(0,0,0,.72);
+  border: 1px solid rgba(255,255,255,.18);
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffd86b;
+  opacity: 0;
+  z-index: 46;
+}
+
+.notice.show {
+  animation: notice .95s ease forwards;
+}
+
+@keyframes notice {
+  0% { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gacha-btn {
+  width: 100%;
+  height: 60px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffe999, #ff9d2b);
+  color: #241300;
+  font-size: 22px;
+  font-weight: 1000;
+  box-shadow: 0 6px 0 #754000, 0 0 24px rgba(255, 170, 60, .45);
+}
+
+.gacha-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 #754000;
+}
+
+.gacha-btn:disabled {
+  opacity: .55;
+}
+
+.history {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  min-height: 30px;
+}
+
+.history span {
+  min-width: 34px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.1);
+  font-size: 12px;
+  font-weight: 1000;
+}
+
+.next-tease {
+  min-height: 20px;
+  text-align: center;
+  color: #ffd86b;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+@media (max-height: 760px) {
+  .title { font-size: 22px; }
+  .stage { min-height: 385px; }
+  .box-wrap { width: 220px; height: 220px; }
+  @keyframes boxDrop {
+    0% { top: -240px; transform: translateX(-50%) scale(.92); }
+    72% { top: 112px; transform: translateX(-50%) scale(1.06); }
+    86% { top: 92px; transform: translateX(-50%) scale(.98); }
+    100% { top: 102px; transform: translateX(-50%) scale(1); }
+  }
+  .result-card { top: 245px; }
+  .cat { width: 105px; height: 105px; }
+}
 </style>
 </head>
+
 <body>
 <div class="app">
-  <h1>🐾 にゃんこ宝箱ガチャ</h1>
+  <div class="header">
+    <div class="title">🐾 にゃんこ宝箱ガチャ 🐾</div>
+    <div class="subtitle">ChatGPTで作ったミニガチャ</div>
+  </div>
 
-  <div class="status">
-    <span class="badge">N 55%</span>
-    <span class="badge">R 30%</span>
-    <span class="badge">SR 12%</span>
-    <span class="badge">SSR 3%</span>
+  <div class="rates">
+    <div class="rate n">N 60%</div>
+    <div class="rate r">R 25%</div>
+    <div class="rate sr">SR 10%</div>
+    <div class="rate ssr">SSR 4%</div>
+    <div class="rate ur">UR 1%</div>
   </div>
 
   <div class="stage" id="stage">
-    <button class="dev" id="devBtn" onclick="toggleSSR()">SSR確定 OFF</button>
-    <div class="rainbow" id="rainbow"></div>
-    <div class="floor"></div>
+    <div class="rainbow-screen" id="rainbowScreen"></div>
+    <div class="flash" id="flash"></div>
 
-    <div class="box" id="box"></div>
-
-    <div class="result" id="result"></div>
-
-    <div class="cat-message" id="catMessage">にゃ？</div>
-    <div class="cat" id="cat">
-      <div class="cat-head">
-        <div class="cat-patch"></div>
-        <div class="cat-patch2"></div>
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-        <div class="nose"></div>
-        <div class="mouth"></div>
+    <div class="counter-panel">
+      <div class="counter-card">
+        <div class="label">総ガチャ数</div>
+        <div class="num" id="count">0</div>
+      </div>
+      <div class="counter-card">
+        <div class="label">UR回数</div>
+        <div class="num" id="urCount">0</div>
       </div>
     </div>
+
+    <div class="rarity-panel">
+      <div><span class="n">N</span><span>60%</span></div>
+      <div><span class="r">R</span><span>25%</span></div>
+      <div><span class="sr">SR</span><span>10%</span></div>
+      <div><span class="ssr">SSR</span><span>4%</span></div>
+      <div><span class="ur">UR</span><span>1%</span></div>
+    </div>
+
+    <div class="all-boxes" id="allBoxes">
+      <img src="box_n.png" />
+      <img src="box_r.png" />
+      <img src="box_sr.png" />
+      <img src="box_ssr.png" />
+      <img src="box_ur.png" />
+    </div>
+
+    <div class="impact" id="impact"></div>
+
+    <div class="box-wrap" id="boxWrap">
+      <img class="box-img" id="boxImg" src="box_n.png" />
+    </div>
+
+    <div class="awakening-text" id="awakeningText">🌈 にゃんこ覚醒 🌈</div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-rarity" id="resultRarity"></div>
+      <div class="result-item" id="resultItem"></div>
+    </div>
+
+    <div class="cat-message" id="catMessage">にゃ？</div>
+
+    <div class="cat" id="cat">
+      <img id="catImg" src="cat_normal.png" />
+    </div>
+
+    <div class="notice" id="notice"></div>
+    <div class="secret-zone" id="secretZone"></div>
   </div>
 
-  <button id="gachaBtn" onclick="startGacha()">ガチャを引く</button>
-
-  <div class="panel">
-    <div class="mini">総回数：<span id="count">0</span></div>
-    <div class="mini">SSR：<span id="ssrCount">0</span></div>
+  <div class="controls">
+    <button class="gacha-btn" id="gachaBtn">ガチャを引く！</button>
+    <div class="history" id="history"></div>
+    <div class="next-tease" id="nextTease"></div>
   </div>
-
-  <div class="history" id="history"></div>
 </div>
 
 <script>
-let count = Number(localStorage.getItem("v2Count") || 0);
-let ssrCount = Number(localStorage.getItem("v2SSR") || 0);
-let history = JSON.parse(localStorage.getItem("v2History") || "[]");
-let forceSSR = false;
+const ASSETS = {
+  catNormal: "cat_normal.png",
+  catSurprise: "cat_surprise.png",
+  catHappy: "cat_happy.png",
+  boxN: "box_n.png",
+  boxR: "box_r.png",
+  boxSR: "box_sr.png",
+  boxSSR: "box_ssr.png",
+  boxUR: "box_ur.png"
+};
 
-const box = document.getElementById("box");
-const result = document.getElementById("result");
-const btn = document.getElementById("gachaBtn");
-const cat = document.getElementById("cat");
-const catMessage = document.getElementById("catMessage");
-const rainbow = document.getElementById("rainbow");
+const RARITIES = {
+  N:   { name: "N",   item: "ふつうの石",       box: ASSETS.boxN,   className: "n" },
+  R:   { name: "R",   item: "青い結晶",         box: ASSETS.boxR,   className: "r" },
+  SR:  { name: "SR",  item: "銀の猫メダル",     box: ASSETS.boxSR,  className: "sr" },
+  SSR: { name: "SSR", item: "黄金の猫王冠",     box: ASSETS.boxSSR, className: "ssr" },
+  UR:  { name: "UR",  item: "伝説の猫のカケラ", box: ASSETS.boxUR,  className: "ur" }
+};
+
+let count = Number(localStorage.getItem("nyanko_count") || 0);
+let urCount = Number(localStorage.getItem("nyanko_ur_count") || 0);
+let history = JSON.parse(localStorage.getItem("nyanko_history") || "[]");
+
+let isPlaying = false;
+let noseTapCount = 0;
+let testMode = false;
+let testModeStep = 0;
+
 const stage = document.getElementById("stage");
-const devBtn = document.getElementById("devBtn");
+const boxWrap = document.getElementById("boxWrap");
+const boxImg = document.getElementById("boxImg");
+const cat = document.getElementById("cat");
+const catImg = document.getElementById("catImg");
+const catMessage = document.getElementById("catMessage");
+const resultCard = document.getElementById("resultCard");
+const resultRarity = document.getElementById("resultRarity");
+const resultItem = document.getElementById("resultItem");
+const gachaBtn = document.getElementById("gachaBtn");
+const impact = document.getElementById("impact");
+const rainbowScreen = document.getElementById("rainbowScreen");
+const flash = document.getElementById("flash");
+const allBoxes = document.getElementById("allBoxes");
+const awakeningText = document.getElementById("awakeningText");
+const notice = document.getElementById("notice");
+const secretZone = document.getElementById("secretZone");
+const nextTease = document.getElementById("nextTease");
 
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-
-function save(){
-  localStorage.setItem("v2Count", count);
-  localStorage.setItem("v2SSR", ssrCount);
-  localStorage.setItem("v2History", JSON.stringify(history));
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function updateUI(){
+function save() {
+  localStorage.setItem("nyanko_count", count);
+  localStorage.setItem("nyanko_ur_count", urCount);
+  localStorage.setItem("nyanko_history", JSON.stringify(history));
+}
+
+function updateUI() {
   document.getElementById("count").textContent = count;
-  document.getElementById("ssrCount").textContent = ssrCount;
+  document.getElementById("urCount").textContent = urCount;
+
   const h = document.getElementById("history");
   h.innerHTML = "";
-  history.slice(0,5).forEach(x=>{
-    const s=document.createElement("span");
-    s.textContent=x;
+  history.slice(0, 5).forEach(x => {
+    const s = document.createElement("span");
+    s.textContent = x;
+    s.className = x.toLowerCase();
     h.appendChild(s);
   });
+
   save();
 }
 
-function toggleSSR(){
-  forceSSR = !forceSSR;
-  devBtn.textContent = forceSSR ? "SSR確定 ON" : "SSR確定 OFF";
-  devBtn.classList.toggle("on", forceSSR);
+function drawRarity() {
+  const r = Math.random() * 100;
+  if (r < 1) return RARITIES.UR;
+  if (r < 5) return RARITIES.SSR;
+  if (r < 15) return RARITIES.SR;
+  if (r < 40) return RARITIES.R;
+  return RARITIES.N;
 }
 
-function drawRarity(){
-  if(forceSSR){
-    return {name:"SSR", item:"神アプリの種", boxType:"luxury"};
+function shouldAwakenNormally(rarity) {
+  if (rarity.name !== "UR") return false;
+  return Math.random() < 0.10;
+}
+
+function getNextResult() {
+  if (testMode) {
+    testModeStep++;
+
+    if (testModeStep === 1) {
+      return { rarity: RARITIES.R, awakening: false, forced: true };
+    }
+
+    if (testModeStep === 2) {
+      testMode = false;
+      testModeStep = 0;
+      showNotice("にゃんこ検証モード終了");
+      return { rarity: RARITIES.UR, awakening: true, forced: true };
+    }
   }
-
-  const r = Math.random()*100;
-
-  if(r < 3){
-    return {name:"SSR", item:"神アプリの種", boxType:"luxury"};
-  }
-  if(r < 15){
-    return {name:"SR", item:"レア素材", boxType:"luxury"};
-  }
-  if(r < 45){
-    return {name:"R", item:"青い結晶", boxType:"wood"};
-  }
-
-  const nBoxes = ["plain","delivery","shop"];
-  return {
-    name:"N",
-    item:"ふつうの石",
-    boxType:"cardboard " + nBoxes[Math.floor(Math.random()*nBoxes.length)]
-  };
-}
-
-function setupBox(rarity){
-  box.className = "box";
-
-  if(rarity.boxType.includes("cardboard")){
-    box.classList.add("cardboard");
-    rarity.boxType.split(" ").forEach(c=>{
-      if(c !== "cardboard") box.classList.add(c);
-    });
-
-    box.innerHTML = '<div class="label"></div><div class="smile"></div>';
-  } else if(rarity.boxType === "wood"){
-    box.classList.add("treasure","wood");
-    box.innerHTML = '<div class="band left"></div><div class="band right"></div>';
-  } else {
-    box.classList.add("treasure","luxury");
-    box.innerHTML = '<div class="band left"></div><div class="band right"></div>';
-  }
-
-  box.style.top = "-170px";
-}
-
-function showResult(rarity){
-  const cls = rarity.name.toLowerCase();
-  result.className = "result show " + cls;
-  result.innerHTML =
-    '<div class="rarity">' + rarity.name + '</div>' +
-    '<div class="item">' + rarity.item + '</div>';
-}
-
-function resetFace(){
-  cat.className = "cat";
-  catMessage.className = "cat-message";
-}
-
-function surpriseFace(){
-  cat.className = "cat surprise";
-}
-
-function happyFace(){
-  cat.className = "cat happy jump";
-}
-
-async function startGacha(){
-  btn.disabled = true;
-  result.className = "result";
-  result.innerHTML = "";
-  rainbow.className = "rainbow";
-  resetFace();
 
   const rarity = drawRarity();
-  setupBox(rarity);
+  const awakening = shouldAwakenNormally(rarity);
+  return { rarity, awakening, forced: false };
+}
+
+function resetStage() {
+  boxWrap.className = "box-wrap";
+  boxWrap.style.top = "-240px";
+  boxImg.src = ASSETS.boxN;
+
+  cat.className = "cat";
+  catImg.src = ASSETS.catNormal;
+
+  catMessage.className = "cat-message";
+  resultCard.className = "result-card";
+  resultRarity.textContent = "";
+  resultItem.textContent = "";
+
+  impact.className = "impact";
+  rainbowScreen.className = "rainbow-screen";
+  flash.className = "flash";
+  awakeningText.className = "awakening-text";
+  allBoxes.className = "all-boxes";
+  notice.className = "notice";
+  nextTease.textContent = "";
+}
+
+function showNotice(text) {
+  notice.textContent = text;
+  notice.className = "notice show";
+  setTimeout(() => {
+    notice.className = "notice";
+  }, 1300);
+}
+
+function showCatMessage(text = "にゃ？") {
+  catMessage.textContent = text;
+  catMessage.className = "cat-message show";
+}
+
+function showResult(rarity) {
+  resultRarity.textContent = rarity.name;
+  resultRarity.className = "result-rarity " + rarity.className;
+  resultItem.textContent = rarity.item;
+  resultCard.className = "result-card show";
+}
+
+function addHistory(rarity) {
+  history.unshift(rarity.name);
+  history = history.slice(0, 5);
+}
+
+function makeSparkles(num = 24, color = "#fff") {
+  for (let i = 0; i < num; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    s.style.left = Math.random() * 88 + 6 + "%";
+    s.style.top = Math.random() * 60 + 12 + "%";
+    s.style.background = color;
+    s.style.boxShadow = "0 0 12px " + color;
+    stage.appendChild(s);
+    setTimeout(() => s.remove(), 1250);
+  }
+}
+
+function makeConfetti(num = 52) {
+  const colors = ["#ff4d4d", "#ffd84d", "#4dff88", "#4dd7ff", "#b84dff", "#ff7ad9"];
+  for (let i = 0; i < num; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random() * 100 + "%";
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animationDelay = Math.random() * .35 + "s";
+    stage.appendChild(c);
+    setTimeout(() => c.remove(), 1800);
+  }
+}
+
+async function baseDropSequence(rarity) {
+  boxImg.src = rarity.box;
+  await sleep(80);
+
+  boxWrap.classList.add("drop");
+  await sleep(760);
+
+  impact.classList.add("show");
+  await sleep(120);
+
+  boxWrap.classList.add("shake");
+  await sleep(780);
+
+  boxWrap.classList.remove("shake");
+  await sleep(260);
+
+  showCatMessage("にゃ？");
+  catImg.src = ASSETS.catSurprise;
+  await sleep(620);
+}
+
+async function normalReveal(rarity) {
+  if (rarity.name === "SR") {
+    makeSparkles(14, "#dfe8ff");
+  }
+
+  if (rarity.name === "SSR") {
+    makeSparkles(22, "#ffd45d");
+    flash.classList.add("show");
+  }
+
+  if (rarity.name === "UR") {
+    rainbowScreen.classList.add("show");
+    flash.classList.add("show");
+    makeSparkles(35);
+    makeConfetti(48);
+  }
+
+  boxWrap.classList.add("open");
+  await sleep(300);
+
+  showResult(rarity);
+
+  if (rarity.name === "SSR" || rarity.name === "UR") {
+    catImg.src = ASSETS.catHappy;
+    cat.classList.add("jump");
+  } else {
+    catImg.src = ASSETS.catNormal;
+  }
+
+  await sleep(1400);
+
+  if (rarity.name === "UR") {
+    nextTease.textContent = "次回：？？？の猫を追加予定...";
+  }
+}
+
+async function awakeningReveal() {
+  catImg.src = ASSETS.catSurprise;
+  showCatMessage("にゃ！？");
+
+  await sleep(300);
+
+  flash.classList.add("show");
+  await sleep(350);
+
+  allBoxes.classList.add("show");
+  await sleep(850);
+
+  rainbowScreen.classList.add("show");
+  makeSparkles(42);
+  await sleep(600);
+
+  awakeningText.classList.add("show");
+  makeConfetti(64);
+  await sleep(1200);
+
+  allBoxes.className = "all-boxes";
+  boxImg.src = ASSETS.boxUR;
+  boxWrap.classList.add("float");
+  await sleep(500);
+
+  boxWrap.classList.add("open");
+  showResult(RARITIES.UR);
+  catImg.src = ASSETS.catHappy;
+  cat.classList.add("jump");
+  await sleep(1600);
+
+  nextTease.textContent = "次回：？？？の猫を追加予定...";
+}
+
+async function startGacha() {
+  if (isPlaying) return;
+
+  isPlaying = true;
+  gachaBtn.disabled = true;
+  resetStage();
+
+  const { rarity, awakening } = getNextResult();
 
   count++;
   updateUI();
 
-  await sleep(80);
+  await baseDropSequence(rarity);
 
-  box.classList.add("drop");
-  await sleep(850);
-
-  box.classList.add("shake");
-  await sleep(850);
-
-  box.classList.remove("shake");
-  await sleep(280);
-
-  if(rarity.name === "SSR"){
-    catMessage.textContent = "にゃ？";
-    catMessage.classList.add("show");
-    surpriseFace();
-
-    await sleep(650);
-
-    box.classList.add("float");
-    await sleep(480);
-
-    box.classList.add("rainbowize");
-    rainbow.classList.add("show");
-    makeSparkles();
-    makeConfetti();
-
-    await sleep(850);
-
-    box.classList.add("open");
-    showResult(rarity);
-    happyFace();
-
-    ssrCount++;
-    history.unshift("SSR");
-    history = history.slice(0,5);
-    updateUI();
-
-    await sleep(1500);
-
+  if (awakening) {
+    await awakeningReveal();
   } else {
-    box.classList.add("open");
-    await sleep(350);
-
-    showResult(rarity);
-
-    if(rarity.name === "SR"){
-      cat.className = "cat happy";
-      makeSparkles(10, "#ffd95d");
-    } else {
-      resetFace();
-    }
-
-    history.unshift(rarity.name);
-    history = history.slice(0,5);
-    updateUI();
-
-    await sleep(1200);
+    await normalReveal(rarity);
   }
+
+  if (rarity.name === "UR") {
+    urCount++;
+  }
+
+  addHistory(rarity);
+  updateUI();
 
   await sleep(450);
-  btn.disabled = false;
+  gachaBtn.disabled = false;
+  isPlaying = false;
 }
 
-function makeSparkles(num=22, color="#fff"){
-  for(let i=0;i<num;i++){
-    const s=document.createElement("div");
-    s.className="sparkle";
-    s.style.left = Math.random()*88 + 6 + "%";
-    s.style.top = Math.random()*58 + 12 + "%";
-    s.style.background = color;
-    s.style.boxShadow = "0 0 12px " + color;
-    stage.appendChild(s);
-    setTimeout(()=>s.remove(),1200);
+function activateSecretTap() {
+  if (isPlaying) return;
+
+  noseTapCount++;
+
+  if (noseTapCount === 1) {
+    setTimeout(() => {
+      noseTapCount = 0;
+    }, 1800);
+  }
+
+  if (noseTapCount >= 7) {
+    noseTapCount = 0;
+    testMode = true;
+    testModeStep = 0;
+    showNotice("にゃんこ検証モード ON：2回目に覚醒");
   }
 }
 
-function makeConfetti(){
-  const colors=["#ff4d4d","#ffd84d","#4dff88","#4dd7ff","#b84dff","#ff7ad9"];
-  for(let i=0;i<48;i++){
-    const c=document.createElement("div");
-    c.className="confetti";
-    c.style.left=Math.random()*100+"%";
-    c.style.background=colors[Math.floor(Math.random()*colors.length)];
-    c.style.animationDelay=Math.random()*0.35+"s";
-    stage.appendChild(c);
-    setTimeout(()=>c.remove(),1800);
-  }
-}
+gachaBtn.addEventListener("click", startGacha);
+secretZone.addEventListener("click", activateSecretTap);
+secretZone.addEventListener("touchend", function(e) {
+  e.preventDefault();
+  activateSecretTap();
+}, { passive: false });
 
-document.addEventListener("touchend",function(e){
-  if(e.target.tagName !== "BUTTON") e.preventDefault();
-},{passive:false});
+document.addEventListener("touchend", function(event) {
+  if (event.target.tagName !== "BUTTON") {
+    event.preventDefault();
+  }
+}, { passive: false });
 
 updateUI();
 </script>
