@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>にゃんこ宝箱ガチャ Ver3.1</title>
+<title>にゃんこ宝箱ガチャ Ver3.2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;touch-action:manipulation;overscroll-behavior:none;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#070911;color:#fff}
@@ -66,9 +66,6 @@ body{background:radial-gradient(circle at 50% 0%,rgba(60,90,180,.35),transparent
 @keyframes sparkleMove{0%{opacity:0;transform:scale(.2) translateY(0)}30%{opacity:1}100%{opacity:0;transform:scale(1.7) translateY(-86px)}}
 .confetti{position:absolute;top:-20px;width:8px;height:14px;z-index:45;animation:fall 1.45s linear forwards}
 @keyframes fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(520px) rotate(420deg)}}
-.notice{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);width:86%;padding:10px;border-radius:15px;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.18);font-size:13px;font-weight:900;color:#ffd86b;opacity:0;z-index:46}
-.notice.show{animation:notice .95s ease forwards}
-@keyframes notice{0%{opacity:0;transform:translateX(-50%) translateY(12px)}20%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
 .controls{display:flex;flex-direction:column;gap:8px}
 .gacha-btn{width:100%;height:60px;border:none;border-radius:18px;background:linear-gradient(180deg,#ffe999,#ff9d2b);color:#241300;font-size:22px;font-weight:1000;box-shadow:0 6px 0 #754000,0 0 24px rgba(255,170,60,.45);touch-action:manipulation;user-select:none}
 .gacha-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #754000}
@@ -135,8 +132,6 @@ body{background:radial-gradient(circle at 50% 0%,rgba(60,90,180,.35),transparent
     <div class="cat" id="cat">
       <img id="catImg" src="cat_normal.png">
     </div>
-
-    <div class="notice" id="notice"></div>
   </div>
 
   <div class="controls">
@@ -191,7 +186,6 @@ const rainbowScreen=document.getElementById("rainbowScreen");
 const flash=document.getElementById("flash");
 const allBoxes=document.getElementById("allBoxes");
 const awakeningText=document.getElementById("awakeningText");
-const notice=document.getElementById("notice");
 const nextTease=document.getElementById("nextTease");
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
@@ -199,8 +193,14 @@ function save(){localStorage.setItem("nyanko_count",count);localStorage.setItem(
 function updateUI(){
   document.getElementById("count").textContent=count;
   document.getElementById("urCount").textContent=urCount;
-  const h=document.getElementById("history");h.innerHTML="";
-  history.slice(0,5).forEach(x=>{const s=document.createElement("span");s.textContent=x;s.className=x.toLowerCase();h.appendChild(s)});
+  const h=document.getElementById("history");
+  h.innerHTML="";
+  history.slice(0,5).forEach(x=>{
+    const s=document.createElement("span");
+    s.textContent=x;
+    s.className=x.toLowerCase();
+    h.appendChild(s);
+  });
   save();
 }
 function drawRarity(){
@@ -211,14 +211,18 @@ function drawRarity(){
   if(r<40)return RARITIES.R;
   return RARITIES.N;
 }
-function shouldAwakenNormally(rarity){return rarity.name==="UR"&&Math.random()<.10}
+function shouldAwakenNormally(rarity){
+  return rarity.name==="UR"&&Math.random()<.10;
+}
 function getNextResult(){
   if(testMode){
     testModeStep++;
-    if(testModeStep===1)return{rarity:RARITIES.R,awakening:false,forced:true};
+    if(testModeStep===1){
+      return{rarity:RARITIES.R,awakening:false,forced:true};
+    }
     if(testModeStep===2){
-      testMode=false;testModeStep=0;
-      setTimeout(()=>showNotice("にゃんこ検証モード終了"),500);
+      testMode=false;
+      testModeStep=0;
       return{rarity:RARITIES.UR,awakening:true,forced:true};
     }
   }
@@ -246,13 +250,7 @@ function resetStage(){
   flash.className="flash";
   awakeningText.className="awakening-text";
   allBoxes.className="all-boxes";
-  notice.className="notice";
   nextTease.textContent="";
-}
-function showNotice(text){
-  notice.textContent=text;
-  notice.className="notice show";
-  setTimeout(()=>notice.className="notice",1300);
 }
 function showCatMessage(text="にゃ？"){
   catMessage.textContent=text;
@@ -264,7 +262,10 @@ function showResult(rarity){
   resultItem.textContent=rarity.item;
   resultCard.className="result-card show";
 }
-function addHistory(rarity){history.unshift(rarity.name);history=history.slice(0,5)}
+function addHistory(rarity){
+  history.unshift(rarity.name);
+  history=history.slice(0,5);
+}
 function makeSparkles(num=24,color="#fff"){
   for(let i=0;i<num;i++){
     const s=document.createElement("div");
@@ -307,11 +308,21 @@ async function baseDropSequence(rarity){
 }
 async function normalReveal(rarity){
   if(rarity.name==="SR")makeSparkles(14,"#dfe8ff");
-  if(rarity.name==="SSR"){makeSparkles(22,"#ffd45d");flash.classList.add("show")}
-  if(rarity.name==="UR"){rainbowScreen.classList.add("show");flash.classList.add("show");makeSparkles(35);makeConfetti(48)}
+  if(rarity.name==="SSR"){
+    makeSparkles(22,"#ffd45d");
+    flash.classList.add("show");
+  }
+  if(rarity.name==="UR"){
+    rainbowScreen.classList.add("show");
+    flash.classList.add("show");
+    makeSparkles(35);
+    makeConfetti(48);
+  }
+
   boxShaker.classList.add("open");
   await sleep(260);
   showResult(rarity);
+
   if(rarity.name==="UR"){
     catImg.src=ASSETS.catUR;
     cat.classList.add("jump");
@@ -321,73 +332,102 @@ async function normalReveal(rarity){
   }else{
     catImg.src=ASSETS.catNormal;
   }
+
   await sleep(1050);
   if(rarity.name==="UR")nextTease.textContent="次回：？？？の猫を追加予定...";
 }
 async function awakeningReveal(){
   catImg.src=ASSETS.catSurprise;
   showCatMessage("にゃ！？");
+
   await sleep(220);
   flash.classList.add("show");
   await sleep(260);
+
   allBoxes.classList.add("show");
   await sleep(650);
+
   rainbowScreen.classList.add("show");
   makeSparkles(42);
   await sleep(420);
+
   awakeningText.classList.add("show");
   makeConfetti(64);
   await sleep(1050);
+
   allBoxes.className="all-boxes";
   boxImg.src=ASSETS.boxUR;
   boxDropper.classList.add("float");
   await sleep(430);
+
   boxShaker.classList.add("open");
   showResult(RARITIES.UR);
+
   catImg.src=ASSETS.catUR;
   cat.classList.add("jump");
+
   await sleep(1250);
   nextTease.textContent="次回：？？？の猫を追加予定...";
 }
 async function startGacha(e){
-  if(e){e.preventDefault();e.stopPropagation()}
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if(isPlaying)return;
+
   isPlaying=true;
   gachaBtn.disabled=true;
   resetStage();
+
   const {rarity,awakening}=getNextResult();
+
   count++;
   updateUI();
+
   await baseDropSequence(rarity);
-  if(awakening)await awakeningReveal();
-  else await normalReveal(rarity);
+
+  if(awakening){
+    await awakeningReveal();
+  }else{
+    await normalReveal(rarity);
+  }
+
   if(rarity.name==="UR")urCount++;
+
   addHistory(rarity);
   updateUI();
+
   await sleep(180);
   gachaBtn.disabled=false;
   isPlaying=false;
 }
 function activateSecretTap(e){
-  if(e){e.preventDefault();e.stopPropagation()}
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if(isPlaying)return;
+
   catTapCount++;
-  showNotice("にゃ…？ "+catTapCount+"/7");
+
   if(catTapCount===1){
     setTimeout(()=>{catTapCount=0},2500);
   }
+
   if(catTapCount>=7){
     catTapCount=0;
     testMode=true;
     testModeStep=0;
-    showNotice("🌈 にゃんこ覚醒スタンバイ 🌈");
   }
 }
 gachaBtn.addEventListener("pointerdown",startGacha,{passive:false});
 cat.addEventListener("pointerdown",activateSecretTap,{passive:false});
+
 document.addEventListener("touchend",e=>{
   if(e.target.tagName!=="BUTTON")e.preventDefault();
 },{passive:false});
+
 updateUI();
 </script>
 </body>
